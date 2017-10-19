@@ -1,0 +1,26 @@
+---
+title: "TTest_Assignment"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+## Hypothesis
+Movies directed by James Cameron gross more than movies not directed by James Cameron.
+
+```{r}
+
+movieRaw <- read.csv("movie_metadata_genre_FORCLASS.csv", header = TRUE, dec = ".")
+
+movieCameron <- movieRaw[movieRaw$director_name == "JamesCameron",]
+
+movieNoCameron <- movieRaw[movieRaw$director_name != "JamesCameron",]
+
+t.test(movieCameron$gross, movieNoCameron$gross, var.equal = F)
+
+hist(movieNoCameron$gross)
+hist(movieCameron$gross)
+```
+
+
