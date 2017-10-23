@@ -1,0 +1,4 @@
+"0","#Getting started:"
+"0","library(ggplot2)"
+"0","roda<-read.csv(""data/Fst_BSA_wLinkageGrp.csv"", header=T)"
+"0","head(roda) #will show you the first 5 rows of each column in the dataset"
