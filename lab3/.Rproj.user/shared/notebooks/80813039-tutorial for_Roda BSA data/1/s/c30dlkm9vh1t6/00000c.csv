@@ -1,3 +1,0 @@
-"0","roda<-roda[order(roda$LinkageGroup, roda$LinkageGroup_Position),]"
-"0","#We want to look at each linkage group at a time:"
-"0","rd<-split(roda, roda$LinkageGroup)"
