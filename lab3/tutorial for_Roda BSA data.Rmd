@@ -12,15 +12,9 @@ install.packages("zoo")
 #Getting started:
 library(ggplot2)
 roda<-read.csv("data/Fst_BSA_wLinkageGrp.csv", header=T)
-head(roda) #will show you the first 5 rows of each column in the dataset
 roda<-roda[order(roda$LinkageGroup, roda$LinkageGroup_Position),]
 #We want to look at each linkage group at a time:
 rd<-split(roda, roda$LinkageGroup)
-```
-
-```{r}
-#mapping all values:
-plot(rd$GR1$LinkageGroup_Position, rd$GR1$Fst)
 
 SWlwg = function(data_x, data_y, window, step_size){
   data_x = as.numeric(data_x)
@@ -43,7 +37,6 @@ SWlwg = function(data_x, data_y, window, step_size){
 
 
 ```{r}
-#the window size can be somewhat arbitrary- it will depend on how many SNPs you have. Making bigger windows can reduce noise, but also lose signal of a true trend. Let's try 20 SNPs, with a 'step size' of 2.
 SWlwg_LG1 <- SWlwg(rd$GR1$LinkageGroup_Position, rd$GR1$Fst, 5, 1)
 LG1_pos<-SWlwg_LG1[[1]]
 LG1_Fst<-SWlwg_LG1[[2]]
@@ -152,7 +145,6 @@ LG20_LG<-rep("LG20",length(LG20_pos))
 #putting all the windowed values back in 1 dataframe:
 LG_names<-rbind(LG1_LG, LG2_LG, LG3_LG, LG4_LG, LG5_LG, LG6_LG, LG7_LG, LG8_LG, LG9_LG, LG10_LG, LG11_LG, LG12_LG, LG13_LG, LG14_LG, LG15_LG, LG16_LG, LG17_LG, LG18_LG, LG19_LG, LG20_LG)
 
-
 LG_pos<-rbind(LG1_pos, LG2_pos, LG3_pos, LG4_pos, LG5_pos, LG6_pos, LG7_pos, LG8_pos, LG9_pos, LG10_pos, LG11_pos, LG12_pos, LG13_pos, LG14_pos, LG15_pos, LG16_pos, LG17_pos, LG18_pos, LG19_pos, LG20_pos)
 
 LG_fst<-rbind(LG1_Fst, LG2_Fst, LG3_Fst, LG4_Fst, LG5_Fst, LG6_Fst, LG7_Fst, LG8_Fst, LG9_Fst, LG10_Fst, LG11_Fst, LG12_Fst, LG13_Fst, LG14_Fst, LG15_Fst, LG16_Fst, LG17_Fst, LG18_Fst, LG19_Fst, LG20_Fst)
@@ -170,7 +162,6 @@ data<-as.data.frame(data)
 ```{r}
 # we've coerced the data a few times, so we need to reformat our numeric data in order for it to plot in ggplot
 
-
 data[[2]] <- as.numeric(as.character(data[[2]]))
 data[[3]] <- as.numeric(as.character(data[[3]]))
 
@@ -182,10 +173,6 @@ data$col <- cut(data$LG_fst,
                breaks = c(-Inf, 0.65, Inf),
                labels = c("<=0.65", ">0.65"))
 ggplot(data, aes(x=LG_pos, y=LG_fst, color=col))+ geom_point()+facet_wrap(~LG_names)+scale_color_manual(values=c("black", "red"))+theme_bw()
-
-# try plotting another variable- perhaps the outlier status!
-# try plotting the different comparisons
-# Want to plot something totally different? feel free to change everything, as long as you think it tells a story!
 
 # 
 ```
