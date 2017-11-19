@@ -1,0 +1,74 @@
+---
+title: "Yep"
+author: "Alan Kong"
+date: "11/7/2017"
+output: html_document
+---
+
+```{r}
+library(DESeq2)
+countfile <- read.table("/Users/Alan/Documents/2017\ Fall\ Semester/Methods\ in\ Computational\ Biology\ and\ Genomics/Hypoxia\ Files/hypoxia_hsap.counts")
+head(countfile, n = 5)
+
+cts <- as.matrix(countfile[,2:5])
+colnames(cts) <- c("s01norm","s02norm","s03hypox","s04hypox")
+rownames(cts) <- countfile[,1]
+head(cts, n = 5)
+
+sampleinfo <- c("untreated","untreated","treated","treated","paired-end","paired-end","paired-end","paired-end")
+coldata <- matrix(sampleinfo, nrow = 4, ncol = 2, byrow = F)
+colnames(coldata) <- c("Condition", "Read Type")
+rownames(coldata) <- c("s01norm", "s02norm", "s03hypox", "s04hypox")
+coldata
+```
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = cts, colData = coldata, design = ~Condition)
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$Condition <- relevel(dds$Condition, ref = "untreated")
+
+dds
+```
+
+```{r}
+dds <- DESeq(dds)
+res <- results(dds)
+res <- lfcShrink(dds,contrast = c("Condition","treated","untreated"), res=res)
+res
+```
+
+```{r}
+resOrdered <- res[order(res$pvalue),]
+summary(res)
+sum(res$padj < 0.1, na.rm=TRUE)
+sum(res$padj < 0.05, na.rm=TRUE)
+
+plotMA(res, ylim=c(-2,2))
+plotCounts(dds, gene=which.min(res$padj), intgroup="Condition")
+plot(res$log2FoldChange,-log(res$padj))
+
+```
+
+```{r}
+library("ggplot2")
+resDF <- as.data.frame(res)
+resDF$sig <- resDF$pvalue < 0.01
+resDF$pcutoff <- resDF$padj < 0.1
+ggplot(resDF, aes(x = resDF$baseMean, y = resDF$log2FoldChange, col = padj)) + geom_point(size = .5) + scale_x_log10() + geom_text(aes(label = ifelse(padj<0.01, rownames(resDF),'')), size = 2) + theme_classic() 
+```
+```{r}
+#genes <- read.table("TIMM.genelist")
+#resDF$genefam <- ".NULL"
+#match <- which(rowname(resDF) == "Gene A")
+#resDF$genefam[[match]] <- "TIMM"
+
+#Now can do a for loop
+
+#for (n in 1:dim(genes)[1]) {
+#match <- which(rownames(resDF) == as.character(genes[n,1]))
+#resDF$genefam[match] <- "TIMM"
+#}
+```
+
+
